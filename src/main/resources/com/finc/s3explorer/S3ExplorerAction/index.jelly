@@ -1,0 +1,265 @@
+<?jelly escape-by-default='true'?>
+<!DOCTYPE some_name [ 
+	<!ENTITY times "&#215;">
+	<!ENTITY nbsp "&#160;"> 
+]> 
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:f="lib/form" xmlns:x="jelly:xml">
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/helper.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/jquery-3.4.1.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/jquery.dataTables.js"></script>
+	<script>
+		jQuery.noConflict();
+	</script>
+
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/bootstrap.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/angular.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/bootbox.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/aws-sdk-2.437.0.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/moment.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/dataTables.bootstrap.min.js"></script> 
+	
+    <l:layout title="S3 Explorer" css="${resURL}/plugin/com.finc.s3explorer/css/explorer.css">
+    	<script src="${resURL}/plugin/com.finc.s3explorer/js/fixer.js"></script>
+	    <meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	    <link rel="shortcut icon" href="https://aws.amazon.com/favicon.ico" />
+	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/bootstrap.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/bootstrap-theme.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/all.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/dataTables.bootstrap.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/explorer.css" />
+    	
+		<l:main-panel>
+			<div ng-app="s3explorer">
+			    <!-- Modal Add Folder dialog -->
+			    <div id="AddFolderModal" class="modal fade" ng-controller="AddFolderController" tabindex="-1">
+			        <div class="modal-dialog">
+			            <div class="modal-content">
+			                <form name="add_folder_form" ng-submit="addFolder()">
+			                    <fieldset>
+			                        <div class="modal-header">
+			                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                            <h4 class="modal-title">S3 Explorer: New Folder</h4>
+			                        </div>
+			                        <div class="modal-body">
+			                            <div class="col-md-18">
+			                                <div class="panel panel-default">
+			                                    <div class="panel-body">
+			                                        <p>Please enter the relative path of the S3 folder to add, for example folder-01 or wallpaper/animals/dogs</p>
+			                                        <div class="input-group bottom-marg-10">
+			                                            <span class="input-group-addon">{{add_folder.view_prefix}}</span>
+			                                            <input name="folder" ng-model="add_folder.entered_folder" type="text" class="form-control" placeholder="folder" ng-required="true"/>
+			                                        </div>
+			                                        <p>The new S3 folder will be {{add_folder.view_prefix}}{{add_folder.entered_folder}}.</p>
+			                                    </div>
+			                                </div>
+			                            </div>
+			                        </div>
+			                        <div class="modal-footer">
+			                            <div class="form-group">
+			                                <div class="col-sm-offset-2 col-sm-10">
+			                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			                                    <button type="submit" class="btn btn-primary"><i class='fa fa-folder-plus fa-lg'></i>&nbsp;Add Folder</button>
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </fieldset>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			    
+			    <!-- Trash modal -->
+			    <div id="TrashModal" class="modal fade" ng-controller="TrashController" tabindex="-1">
+			        <div class="modal-dialog modal-xl">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                    <h4 class="modal-title">S3 Explorer: Delete {{trash.count}} objects</h4>
+			                </div>
+			                <div class="modal-body">
+			                    <div class="col-md-18">
+			                        <div class="panel-body">
+			                            <p>
+			                            Please confirm that you want to delete the following objects from S3.
+			                            </p>
+			                            <br/>
+			                            <table class="table table-bordered table-hover table-striped" id="trash-table">
+			                                <thead id="trash-thead">
+			                                    <tr>
+			                                        <th></th>
+			                                        <th>Object</th>
+			                                        <th>Folder</th>
+			                                        <th>Last Modified</th>
+			                                        <th>Timestamp</th>
+			                                        <th>Class</th>
+			                                        <th>Size</th>
+			                                        <th>Result</th>
+			                                    </tr>
+			                                </thead>
+			                                <tbody id="trash-tbody">
+			                                    <tr ng-repeat="o in trash.objects" ng-attr-id="trash-tr-{{$index}}">
+			                                        <td>{{$index + 1}}</td>
+			                                        <td>{{o.object}}</td>
+			                                        <td>{{o.folder}}</td>
+			                                        <td>{{o.last_modified}}</td>
+			                                        <td>{{o.timestamp}}</td>
+			                                        <td>{{o.class}}</td>
+			                                        <td>{{o.size}}</td>
+			                                        <td ng-attr-id="trash-td-{{$index}}"><i>n/a</i></td>
+			                                    </tr>
+			                                </tbody>
+			                            </table>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="modal-footer">
+			                    <div class="form-group">
+			                        <div class="col-sm-offset-2 col-sm-10">
+			                            <button id="trash-btn-cancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			                            <button id="trash-btn-delete" type="submit" class="btn btn-danger" ng-disabled="trash.trashing"><i class="fa fa-trash-alt fa-lg"></i>&nbsp;{{trash.button}}</button>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			
+			    <!-- Hidden selector for adding files -->
+			    <input id="addedFiles" type="file" ng-hide="true" multiple="multiple"/>
+			
+			    <!-- Upload modal -->
+			    <div id="UploadModal" class="modal fade" ng-controller="UploadController" tabindex="-1">
+			        <div class="modal-dialog modal-xl">
+			            <div class="modal-content">
+			                <div class="modal-header">
+			                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                    <h4 class="modal-title">Upload to:&nbsp;{{upload.title}}</h4>
+			                </div>
+			                <div class="modal-body">
+			                    <div class="col-md-18">
+			                        <div class="panel-body">
+			                            <p>
+			                            Please confirm that you want to upload the following files to S3.
+			                            </p>
+			                            <table class="table table-bordered table-hover table-striped" id="upload-table">
+			                                <thead id="upload-thead">
+			                                    <tr>
+			                                        <th></th>
+			                                        <th>Filename</th>
+			                                        <th>Type</th>
+			                                        <th>Size</th>
+			                                        <th>Progress</th>
+			                                    </tr>
+			                                </thead>
+			                                <tbody id="upload-tbody">
+			                                    <tr ng-repeat="file in upload.files">
+			                                        <td>{{$index + 1}}</td>
+			                                        <td>{{file.short}}</td>
+			                                        <td>{{file.type}}</td>
+			                                        <td>{{file.size}}</td>
+			                                        <td id="upload-td-{{$index}}">
+			                                            <span id="upload-td-progress-{{$index}}" class="progress-bar" data-percent="0"></span>
+			                                        </td>
+			                                    </tr>
+			                                </tbody>
+			                            </table>
+			                            <p>
+			                            The selected files will be uploaded to {{upload.title}}
+			                            </p>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="modal-footer">
+			                    <div class="form-group">
+			                        <div class="col-sm-offset-2 col-sm-10">
+			                            <button id="upload-btn-cancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			                            <button id="upload-btn-upload" type="submit" class="btn btn-primary" ng-disabled="upload.uploading"><i class="fa fa-cloud-upload-alt fa-lg"></i>&nbsp;{{upload.button}}</button>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			
+			    <!-- Main Explorer View -->
+			    <div id="page-wrapper" ng-controller="ViewController">
+			        <div class="row">
+			            <div class="col-lg-12">
+			                <div class="panel panel-primary dropzone">
+			
+			                    <!-- Panel including bucket/folder information and controls -->
+			                    <div class="panel-heading clearfix">
+			
+			                        <!-- Bucket selection and breadcrumbs -->
+			                        <div class="btn-group pull-left">
+			                            <!-- Utility name -->
+			                            <div class="title pull-left">
+			                                Amazon S3 Explorer (v2 alpha)&nbsp;
+			                            </div>
+			                            <!-- Bucket breadcrumbs -->
+			                            <div class="pull-right" ng-hide="!view.settings">
+			                                <ul id="breadcrumb" class="breadcrumb pull-right">
+			                                    <li class="active">
+			                                        <a href="#bucket" data-bucket="${it.bucketName}">${it.bucketName}</a>
+			                                    </li>
+			                                </ul>
+			                            </div>
+			                        </div>
+			
+			                        <!-- Folder/Bucket radio group and progress spinner -->
+			                        <div id="navbuttons" class="pull-right hidden">
+			                            <div>
+			                                <!-- Info/Refresh/Settings buttons -->
+			                                <div class="btn-group">
+			                                    <span id="bucket-plus" style="cursor: pointer;" class="btn fa fa-folder-plus fa-2x" ng-hide="!view.settings" title="New folder" data-target="#AddFolderModal" data-toggle="modal"></span>
+			                                    <span id="bucket-upload" style="cursor: pointer;" class="btn fa fa-cloud-upload-alt fa-2x" ng-hide="!view.settings" ng-click="upload()" title="Upload files"></span>
+			                                    <span id="bucket-trash" style="cursor: pointer;" class="btn fa fa-trash-alt fa-2x" title="Delete {{view.keys_selected.length}} selected object(s)" ng-hide="!view.settings || !view.keys_selected.length" ng-disabled="!view.keys_selected.length" ng-click="trash()"></span>
+			                                    <span id="bucket-loader" style="cursor: pointer;" class="btn fa fa-sync fa-2x" ng-hide="!view.settings" ng-click="refresh()" title="Refresh"></span>
+			                                </div>
+			                                <!-- Record count -->
+			                                <div class="btn-group" ng-hide="!view.settings || view.keys_selected.length > 0">
+			                                    <span id="badgecount" style="cursor: default;" class="btn badge pull-right" title="Object count">{{view.objectCount}}</span>
+			                                </div>
+			                                <!-- Record/checked count -->
+			                                <div class="btn-group" ng-hide="!view.settings || view.keys_selected.length == 0">
+			                                    <span id="badgecount" style="cursor: default;" class="btn badge pull-right" title="Selected object count">{{view.keys_selected.length}} of {{view.objectCount}}</span>
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </div>
+			
+			                    <!-- Panel including S3 object table -->
+			                    <div class="panel-body">
+			                        <table class="table table-bordered table-hover table-striped" style="width:100%" id="s3objects-table">
+			                            <thead>
+			                                <tr>
+			                                    <th class="text-center">Select</th>
+			                                    <th>Object</th>
+			                                    <th>Folder</th>
+			                                    <th>Last Modified</th>
+			                                    <th>Timestamp</th>
+			                                    <th>Class</th>
+			                                    <th>Size</th>
+			                                </tr>
+			                            </thead>
+			                            <tbody id="s3objects-tbody"></tbody>
+			                        </table>
+			                    </div>
+			
+			                </div>
+			            </div>
+			        </div>
+		    	</div>
+		    	
+			    <div id="page-wrapper" ng-controller="SettingsController"></div>
+			
+			</div>
+			<input id="awsregion" value="${it.awsRegion}" type="hidden" />
+			<input id="awsid" value="${it.awsAccessKeyId}" type="hidden" />
+			<input id="awskey" value="${it.awsSecretAccessKey}" type="hidden" />
+			<input id="bucket" value="${it.bucketName}" type="hidden" />
+	    </l:main-panel>
+	</l:layout>
+   	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/s3explorer.js"></script>
+</j:jelly>

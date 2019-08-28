@@ -1,0 +1,18 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:section title="S3 Explorer">
+    <f:entry title="${%AWS_REGION}">
+      <f:textbox name="awsRegion" value="${it.awsRegion}"/>
+    </f:entry>
+    <f:entry title="${%AWS_ACCESS_KEY_ID}">
+      <f:textbox name="awsAccessKeyId" value="${it.awsAccessKeyId}"/>
+    </f:entry>
+    <f:entry title="${%AWS_SECRET_ACCESS_KEY}">
+      <f:textbox name="awsSecretAccessKey" value="${it.awsSecretAccessKey}"/>
+    </f:entry>
+    <f:entry title="${%Bucket Name}">
+      <f:textbox name="bucketName" value="${it.bucketName}"/>
+    </f:entry>
+  </f:section>
+</j:jelly>
