@@ -7,8 +7,8 @@ mvn install
 
 ## Install
 Go to _Manage Jenkins_ -> _Manage Plugins_ -> _Advanced_ -> _Upload Plugin_  
-If you have executed `mvn install` successfully, then you can upload file `s3explorer/target/com.finc.s3explorer.hpi`.
-Otherwise, you can download file `com.finc.s3explorer.hpi` from the latest release https://github.com/ngocson2vn/s3explorer/releases/latest and then upload it to your Jenkins system.
+If you have executed `mvn install` successfully, then you can upload file `s3explorer/target/s3explorer.hpi`.
+Otherwise, you can download file `s3explorer.hpi` from the latest release https://github.com/ngocson2vn/s3explorer/releases/latest and then upload it to your Jenkins system.
 
 ## Configure
 Go to _Manage Jenkins_ -> _Configure System_  

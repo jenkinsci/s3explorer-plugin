@@ -1,4 +1,4 @@
-package com.finc.s3explorer;
+package s3explorer;
 
 import java.util.Collection;
 import java.util.Collections;

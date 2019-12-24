@@ -8,8 +8,8 @@
         <relativePath />
     </parent>
     <groupId>io.jenkins.plugins</groupId>
-    <artifactId>com.finc.s3explorer</artifactId>
-    <version>1.0.5</version>
+    <artifactId>s3explorer</artifactId>
+    <version>1.0.6</version>
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.164.1</jenkins.version>
