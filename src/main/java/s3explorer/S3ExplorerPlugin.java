@@ -1,4 +1,4 @@
-package com.finc.s3explorer;
+package s3explorer;
 
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class S3ExplorerPlugin extends Plugin {
         LOG.info("Starting S3Explorer plugin");
         String jenkinsHome = Jenkins.get().getRootDir().getPath();
         LOG.info("Root dir = " + jenkinsHome);
-        String configPath = jenkinsHome + "/secrets/com.finc.s3explorer";
+        String configPath = jenkinsHome + "/secrets/s3explorer";
         this.configFile = configPath + "/config.properties";
         
         File file = new File(this.configFile);

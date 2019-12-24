@@ -4,30 +4,30 @@
 	<!ENTITY nbsp "&#160;"> 
 ]> 
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler" xmlns:f="lib/form" xmlns:x="jelly:xml">
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/helper.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/jquery-3.4.1.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/jquery.dataTables.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/helper.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/jquery-3.4.1.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/jquery.dataTables.js"></script>
 	<script>
 		jQuery.noConflict();
 	</script>
 
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/bootstrap.min.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/angular.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/bootbox.min.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/aws-sdk-2.437.0.min.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/moment.min.js"></script>
-	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/dataTables.bootstrap.min.js"></script> 
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/bootstrap.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/angular.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/bootbox.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/aws-sdk-2.437.0.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/moment.min.js"></script>
+	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/dataTables.bootstrap.min.js"></script> 
 	
-    <l:layout title="S3 Explorer" css="${resURL}/plugin/com.finc.s3explorer/css/explorer.css">
-    	<script src="${resURL}/plugin/com.finc.s3explorer/js/fixer.js"></script>
+    <l:layout title="S3 Explorer" css="${resURL}/plugin/s3explorer/css/explorer.css">
+    	<script src="${resURL}/plugin/s3explorer/js/fixer.js"></script>
 	    <meta charset="utf-8" />
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	    <link rel="shortcut icon" href="https://aws.amazon.com/favicon.ico" />
-	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/bootstrap.min.css" />
-	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/bootstrap-theme.min.css" />
-	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/all.css" />
-	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/dataTables.bootstrap.min.css" />
-	    <link rel="stylesheet" href="${resURL}/plugin/com.finc.s3explorer/css/explorer.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/s3explorer/css/bootstrap.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/s3explorer/css/bootstrap-theme.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/s3explorer/css/all.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/s3explorer/css/dataTables.bootstrap.min.css" />
+	    <link rel="stylesheet" href="${resURL}/plugin/s3explorer/css/explorer.css" />
     	
 		<l:main-panel>
 			<div ng-app="s3explorer">
@@ -261,5 +261,5 @@
 			<input id="bucket" value="${it.bucketName}" type="hidden" />
 	    </l:main-panel>
 	</l:layout>
-   	<script src="${it.jenkinsUrl}/plugin/com.finc.s3explorer/js/s3explorer.js"></script>
+   	<script src="${it.jenkinsUrl}/plugin/s3explorer/js/s3explorer.js"></script>
 </j:jelly>
