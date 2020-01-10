@@ -13,17 +13,18 @@ import java.util.logging.Logger;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Plugin;
+import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 public class S3ExplorerPlugin extends Plugin {
     private final static Logger LOG = Logger.getLogger(S3ExplorerPlugin.class.getName());
-    private static String AWS_REGION;
-    private static String AWS_ACCESS_KEY_ID;
-    private static String AWS_SECRET_ACCESS_KEY;
-    private static String BUCKET_NAME;
+    private static String AWS_REGION = "";
+    private static Secret AWS_ACCESS_KEY_ID = Secret.fromString("");
+    private static Secret AWS_SECRET_ACCESS_KEY = Secret.fromString("");
+    private static String BUCKET_NAME = "";
     private String configFile;
-    
+
     public void start() throws Exception {
         LOG.info("Starting S3Explorer plugin");
         String jenkinsHome = Jenkins.get().getRootDir().getPath();
@@ -85,8 +86,8 @@ public class S3ExplorerPlugin extends Plugin {
             output = new FileOutputStream(this.configFile);
             Properties prop = new Properties();
             prop.setProperty("region", S3ExplorerPlugin.AWS_REGION);
-            prop.setProperty("aws_access_key_id", S3ExplorerPlugin.AWS_ACCESS_KEY_ID);
-            prop.setProperty("aws_secret_access_key", S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY);
+            prop.setProperty("aws_access_key_id", S3ExplorerPlugin.AWS_ACCESS_KEY_ID.getEncryptedValue());
+            prop.setProperty("aws_secret_access_key", S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY.getEncryptedValue());
             prop.setProperty("bucket", S3ExplorerPlugin.BUCKET_NAME);
             prop.store(output, "Required properties");
         } catch (IOException e) {
@@ -107,11 +108,11 @@ public class S3ExplorerPlugin extends Plugin {
     }
     
     public static String getAwsAccessKeyId() {
-        return S3ExplorerPlugin.AWS_ACCESS_KEY_ID;
+        return S3ExplorerPlugin.AWS_ACCESS_KEY_ID.getPlainText();
     }
     
     public static String getAwsSecretAccessKey() {
-        return S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY;
+        return S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY.getPlainText();
     }
 
     public static String getBucketName() {
@@ -123,11 +124,11 @@ public class S3ExplorerPlugin extends Plugin {
     }
     
     public static void setAwsAccessKeyId(String awsAccessKeyId) {
-        S3ExplorerPlugin.AWS_ACCESS_KEY_ID = awsAccessKeyId;
+        S3ExplorerPlugin.AWS_ACCESS_KEY_ID = Secret.fromString(awsAccessKeyId);
     }
     
     public static void setAwsSecretAccessKey(String awsSecretAccessKey) {
-        S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY = awsSecretAccessKey;
+        S3ExplorerPlugin.AWS_SECRET_ACCESS_KEY = Secret.fromString(awsSecretAccessKey);
     }
 
     public static void setBucketName(String bucketName) {
