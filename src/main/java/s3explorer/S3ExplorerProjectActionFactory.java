@@ -11,10 +11,9 @@ import hudson.model.TransientProjectActionFactory;
 @Extension
 public class S3ExplorerProjectActionFactory extends TransientProjectActionFactory {
 
-    @Override
-    public Collection<? extends Action> createFor(AbstractProject abstractProject) {
+	@Override
+	public Collection<? extends Action> createFor(AbstractProject abstractProject) {
 
-        return Collections.singletonList(new S3ExplorerAction(abstractProject));
-    }
+		return Collections.singletonList(new S3ExplorerAction(abstractProject));
+	}
 }
-
